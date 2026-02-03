@@ -36,7 +36,7 @@
         }
         
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -59,24 +59,73 @@
             margin-bottom: 2rem;
             animation: fadeIn 1s ease 0.2s both;
         }
-        
-        .upload-section {
+
+        .export-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
             background: var(--surface);
-            border: 2px dashed var(--accent-dim);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+        
+        .export-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--accent-dim);
+        }
+
+        .sections-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 2px solid var(--accent-dim);
             border-radius: 12px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
             transition: all 0.3s ease;
             animation: fadeIn 1s ease 0.4s both;
         }
-        
-        .upload-section:hover {
+
+        .section-card:hover {
             border-color: var(--accent);
             background: var(--surface-light);
         }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title .icon {
+            font-size: 1.5rem;
+        }
         
         .file-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         
         .file-group:last-child {
@@ -87,7 +136,7 @@
             display: block;
             font-weight: 700;
             margin-bottom: 0.5rem;
-            color: var(--accent);
+            color: var(--text);
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -127,35 +176,7 @@
             background: var(--info);
             transform: translateY(-1px);
         }
-        
-        .export-btn {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            background: var(--surface);
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            border-radius: 8px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            text-decoration: none;
-            text-align: center;
-            margin-bottom: 2rem;
-            animation: fadeIn 1s ease 0.3s both;
-        }
-        
-        .export-btn:hover {
-            background: var(--accent);
-            color: var(--bg);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--accent-dim);
-        }
-        
+
         .analyze-btn {
             width: 100%;
             padding: 1rem;
@@ -170,7 +191,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            animation: fadeIn 1s ease 0.6s both;
+            margin-top: 1rem;
         }
         
         .analyze-btn:hover {
@@ -225,10 +246,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-        
-        .result-title .icon {
-            font-size: 1.5rem;
         }
         
         .result-title .count {
@@ -354,6 +371,12 @@
             75% { transform: translateX(10px); }
         }
         
+        @media (max-width: 768px) {
+            .sections-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 15px;
@@ -363,12 +386,8 @@
                 font-size: 2rem;
             }
             
-            .upload-section {
+            .section-card {
                 padding: 1rem;
-            }
-            
-            .file-group {
-                margin-bottom: 1rem;
             }
         }
     </style>
@@ -376,33 +395,51 @@
 <body>
     <div class="container">
         <h1>Instagram Analyzer</h1>
-        <p class="subtitle">Analysez l'évolution de vos followers et suivis</p>
+        <p class="subtitle">Analysez l'évolution de vos followers et suivis séparément</p>
         
         <a href="https://chromewebstore.google.com/detail/igfollower-ig-follower-ex/iindafjcdjddenmiacdelomccfblfllm?hl=fr" target="_blank" class="export-btn">📤 Exporter les followers</a>
         
-        <div class="upload-section">
-            <div class="file-group">
-                <label for="followersA">📊 Followers A (ancien)</label>
-                <input type="file" id="followersA" accept=".csv">
+        <div class="sections-container">
+            <!-- Section Followers -->
+            <div class="section-card">
+                <div class="section-title">
+                    <span class="icon">📊</span>
+                    <span>Followers</span>
+                </div>
+                
+                <div class="file-group">
+                    <label for="followersA">Ancien</label>
+                    <input type="file" id="followersA" accept=".csv">
+                </div>
+                
+                <div class="file-group">
+                    <label for="followersB">Récent</label>
+                    <input type="file" id="followersB" accept=".csv">
+                </div>
+
+                <button class="analyze-btn" onclick="analyzeFollowers()">Analyser Followers</button>
             </div>
-            
-            <div class="file-group">
-                <label for="followersB">📊 Followers B (récent)</label>
-                <input type="file" id="followersB" accept=".csv">
-            </div>
-            
-            <div class="file-group">
-                <label for="followingA">👥 Following A (ancien)</label>
-                <input type="file" id="followingA" accept=".csv">
-            </div>
-            
-            <div class="file-group">
-                <label for="followingB">👥 Following B (récent)</label>
-                <input type="file" id="followingB" accept=".csv">
+
+            <!-- Section Following -->
+            <div class="section-card">
+                <div class="section-title">
+                    <span class="icon">👥</span>
+                    <span>Following</span>
+                </div>
+                
+                <div class="file-group">
+                    <label for="followingA">Ancien</label>
+                    <input type="file" id="followingA" accept=".csv">
+                </div>
+                
+                <div class="file-group">
+                    <label for="followingB">Récent</label>
+                    <input type="file" id="followingB" accept=".csv">
+                </div>
+
+                <button class="analyze-btn" onclick="analyzeFollowing()">Analyser Following</button>
             </div>
         </div>
-        
-        <button class="analyze-btn" onclick="analyzeData()">Analyser</button>
         
         <div id="results" class="results"></div>
         
@@ -413,27 +450,48 @@
 
     <script>
         function cleanHeader(header) {
-            return header.toLowerCase().replace(/[^a-z ]/g, '');
+            return header.toLowerCase().replace(/[^a-z0-9_ ]/g, '').trim();
+        }
+
+        function findColumnIndex(headers, possibleNames) {
+            for (const name of possibleNames) {
+                const cleanName = cleanHeader(name);
+                const index = headers.findIndex(h => cleanHeader(h) === cleanName);
+                if (index !== -1) return index;
+            }
+            return -1;
         }
 
         function parseCSV(text) {
             const lines = text.split('\n');
             if (lines.length < 2) return {};
             
-            const headers = lines[0].split(',').map(h => cleanHeader(h.trim()));
+            const headers = lines[0].split(',');
             
-            let idxUserId, idxUsername;
-            try {
-                idxUserId = headers.indexOf('user id');
-                idxUsername = headers.indexOf('username');
-                
-                if (idxUserId === -1 || idxUsername === -1) {
-                    throw new Error('Colonnes "user id" ou "username" non trouvées');
-                }
-            } catch (e) {
-                console.error('Colonnes détectées:', headers);
-                throw e;
+            // Chercher les colonnes d'ID utilisateur (plusieurs variantes possibles)
+            const userIdIndex = findColumnIndex(headers, [
+                'user id',
+                'userid',
+                'ig_user_id',
+                'iguser_id',
+                'ig user id'
+            ]);
+            
+            // Chercher les colonnes de nom d'utilisateur
+            const usernameIndex = findColumnIndex(headers, [
+                'username',
+                'user name',
+                'user_name',
+                'ig_username',
+                'ig username'
+            ]);
+            
+            if (userIdIndex === -1 || usernameIndex === -1) {
+                console.error('Colonnes détectées:', headers.map(h => cleanHeader(h)));
+                throw new Error(`Colonnes non trouvées. ID trouvé: ${userIdIndex !== -1}, Username trouvé: ${usernameIndex !== -1}`);
             }
+            
+            console.log(`Colonnes utilisées - ID: index ${userIdIndex}, Username: index ${usernameIndex}`);
             
             const users = {};
             for (let i = 1; i < lines.length; i++) {
@@ -441,9 +499,9 @@
                 if (!line) continue;
                 
                 const values = line.split(',');
-                if (values.length > idxUsername) {
-                    const userId = values[idxUserId].trim();
-                    const username = values[idxUsername].trim();
+                if (values.length > Math.max(userIdIndex, usernameIndex)) {
+                    const userId = values[userIdIndex].trim();
+                    const username = values[usernameIndex].trim();
                     if (userId && username) {
                         users[userId] = username;
                     }
@@ -462,47 +520,69 @@
             });
         }
 
-        async function analyzeData() {
+        async function analyzeFollowers() {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
             
             try {
                 const followersAFile = document.getElementById('followersA').files[0];
                 const followersBFile = document.getElementById('followersB').files[0];
-                const followingAFile = document.getElementById('followingA').files[0];
-                const followingBFile = document.getElementById('followingB').files[0];
                 
-                if (!followersAFile || !followersBFile || !followingAFile || !followingBFile) {
-                    throw new Error('Veuillez sélectionner tous les fichiers CSV');
+                if (!followersAFile || !followersBFile) {
+                    throw new Error('Veuillez sélectionner les deux fichiers CSV de followers');
                 }
                 
                 const followersAText = await readFile(followersAFile);
                 const followersBText = await readFile(followersBFile);
-                const followingAText = await readFile(followingAFile);
-                const followingBText = await readFile(followingBFile);
                 
                 const followersA = parseCSV(followersAText);
                 const followersB = parseCSV(followersBText);
-                const followingA = parseCSV(followingAText);
-                const followingB = parseCSV(followingBText);
                 
                 const followersASet = new Set(Object.keys(followersA));
                 const followersBSet = new Set(Object.keys(followersB));
-                const followingASet = new Set(Object.keys(followingA));
-                const followingBSet = new Set(Object.keys(followingB));
                 
                 const lostFollowers = [...followersASet].filter(id => !followersBSet.has(id));
                 const newFollowers = [...followersBSet].filter(id => !followersASet.has(id));
-                const unfollowed = [...followingASet].filter(id => !followingBSet.has(id));
-                const newFollowing = [...followingBSet].filter(id => !followingASet.has(id));
                 
                 displayResults('📉 Followers perdus', lostFollowers, followersA, 'lost');
                 displayResults('📈 Nouveaux followers', newFollowers, followersB, 'new');
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Erreur Followers: ${error.message}</div>`;
+            }
+        }
+
+        async function analyzeFollowing() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                const followingAFile = document.getElementById('followingA').files[0];
+                const followingBFile = document.getElementById('followingB').files[0];
+                
+                if (!followingAFile || !followingBFile) {
+                    throw new Error('Veuillez sélectionner les deux fichiers CSV de following');
+                }
+                
+                const followingAText = await readFile(followingAFile);
+                const followingBText = await readFile(followingBFile);
+                
+                const followingA = parseCSV(followingAText);
+                const followingB = parseCSV(followingBText);
+                
+                const followingASet = new Set(Object.keys(followingA));
+                const followingBSet = new Set(Object.keys(followingB));
+                
+                const unfollowed = [...followingASet].filter(id => !followingBSet.has(id));
+                const newFollowing = [...followingBSet].filter(id => !followingASet.has(id));
+                
                 displayResults('🚫 Tu ne suis plus', unfollowed, followingA, 'unfollowed');
                 displayResults('✅ Tu suis maintenant', newFollowing, followingB, 'following');
                 
             } catch (error) {
-                resultsDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.innerHTML = `❌ Erreur Following: ${error.message}`;
+                resultsDiv.appendChild(errorDiv);
             }
         }
 
