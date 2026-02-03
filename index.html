@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Analyzer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
+        
+        :root {
+            --bg: #0a0a0f;
+            --surface: #151520;
+            --surface-light: #1e1e2e;
+            --accent: #00ff88;
+            --accent-dim: #00ff8833;
+            --text: #e8e8f0;
+            --text-dim: #9999aa;
+            --error: #ff3366;
+            --warning: #ffaa00;
+            --info: #00ddff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease 0.2s both;
+        }
+        
+        .upload-section {
+            background: var(--surface);
+            border: 2px dashed var(--accent-dim);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            animation: fadeIn 1s ease 0.4s both;
+        }
+        
+        .upload-section:hover {
+            border-color: var(--accent);
+            background: var(--surface-light);
+        }
+        
+        .file-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        input[type="file"]:hover {
+            border-color: var(--accent);
+        }
+        
+        input[type="file"]::file-selector-button {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            margin-right: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        input[type="file"]::file-selector-button:hover {
+            background: var(--info);
+            transform: translateY(-1px);
+        }
+        
+        .export-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: var(--surface);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease 0.3s both;
+        }
+        
+        .export-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--accent-dim);
+        }
+        
+        .analyze-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: fadeIn 1s ease 0.6s both;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--accent-dim);
+        }
+        
+        .analyze-btn:active {
+            transform: translateY(0);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            margin-top: 2rem;
+        }
+        
+        .result-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent);
+            animation: slideInLeft 0.5s ease;
+        }
+        
+        .result-section.lost {
+            border-left-color: var(--error);
+        }
+        
+        .result-section.new {
+            border-left-color: var(--accent);
+        }
+        
+        .result-section.unfollowed {
+            border-left-color: var(--warning);
+        }
+        
+        .result-section.following {
+            border-left-color: var(--info);
+        }
+        
+        .result-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .result-title .icon {
+            font-size: 1.5rem;
+        }
+        
+        .result-title .count {
+            margin-left: auto;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        
+        .user-list {
+            list-style: none;
+        }
+        
+        .user-item {
+            padding: 0.75rem;
+            background: var(--bg);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .user-item:hover {
+            background: var(--surface-light);
+            transform: translateX(4px);
+        }
+        
+        .user-id {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-family: 'Space Mono', monospace;
+        }
+        
+        .user-name {
+            color: var(--text);
+            font-weight: 700;
+        }
+        
+        .empty-message {
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .error {
+            background: var(--surface);
+            border: 2px solid var(--error);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            color: var(--error);
+            animation: shake 0.5s ease;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--surface-light);
+            text-align: center;
+        }
+        
+        .credit {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+        
+        .credit .navy {
+            font-weight: 800;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--info) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 1rem;
+            }
+            
+            .file-group {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Instagram Analyzer</h1>
+        <p class="subtitle">Analysez l'évolution de vos followers et suivis</p>
+        
+        <a href="https://chromewebstore.google.com/detail/igfollower-ig-follower-ex/iindafjcdjddenmiacdelomccfblfllm?hl=fr" target="_blank" class="export-btn">📤 Exporter les followers</a>
+        
+        <div class="upload-section">
+            <div class="file-group">
+                <label for="followersA">📊 Followers A (ancien)</label>
+                <input type="file" id="followersA" accept=".csv">
+            </div>
+            
+            <div class="file-group">
+                <label for="followersB">📊 Followers B (récent)</label>
+                <input type="file" id="followersB" accept=".csv">
+            </div>
+            
+            <div class="file-group">
+                <label for="followingA">👥 Following A (ancien)</label>
+                <input type="file" id="followingA" accept=".csv">
+            </div>
+            
+            <div class="file-group">
+                <label for="followingB">👥 Following B (récent)</label>
+                <input type="file" id="followingB" accept=".csv">
+            </div>
+        </div>
+        
+        <button class="analyze-btn" onclick="analyzeData()">Analyser</button>
+        
+        <div id="results" class="results"></div>
+        
+        <div class="footer">
+            <p class="credit">by <span class="navy">navy</span></p>
+        </div>
+    </div>
+
+    <script>
+        function cleanHeader(header) {
+            return header.toLowerCase().replace(/[^a-z ]/g, '');
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            if (lines.length < 2) return {};
+            
+            const headers = lines[0].split(',').map(h => cleanHeader(h.trim()));
+            
+            let idxUserId, idxUsername;
+            try {
+                idxUserId = headers.indexOf('user id');
+                idxUsername = headers.indexOf('username');
+                
+                if (idxUserId === -1 || idxUsername === -1) {
+                    throw new Error('Colonnes "user id" ou "username" non trouvées');
+                }
+            } catch (e) {
+                console.error('Colonnes détectées:', headers);
+                throw e;
+            }
+            
+            const users = {};
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = line.split(',');
+                if (values.length > idxUsername) {
+                    const userId = values[idxUserId].trim();
+                    const username = values[idxUsername].trim();
+                    if (userId && username) {
+                        users[userId] = username;
+                    }
+                }
+            }
+            
+            return users;
+        }
+
+        async function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsText(file, 'latin1');
+            });
+        }
+
+        async function analyzeData() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const followersAFile = document.getElementById('followersA').files[0];
+                const followersBFile = document.getElementById('followersB').files[0];
+                const followingAFile = document.getElementById('followingA').files[0];
+                const followingBFile = document.getElementById('followingB').files[0];
+                
+                if (!followersAFile || !followersBFile || !followingAFile || !followingBFile) {
+                    throw new Error('Veuillez sélectionner tous les fichiers CSV');
+                }
+                
+                const followersAText = await readFile(followersAFile);
+                const followersBText = await readFile(followersBFile);
+                const followingAText = await readFile(followingAFile);
+                const followingBText = await readFile(followingBFile);
+                
+                const followersA = parseCSV(followersAText);
+                const followersB = parseCSV(followersBText);
+                const followingA = parseCSV(followingAText);
+                const followingB = parseCSV(followingBText);
+                
+                const followersASet = new Set(Object.keys(followersA));
+                const followersBSet = new Set(Object.keys(followersB));
+                const followingASet = new Set(Object.keys(followingA));
+                const followingBSet = new Set(Object.keys(followingB));
+                
+                const lostFollowers = [...followersASet].filter(id => !followersBSet.has(id));
+                const newFollowers = [...followersBSet].filter(id => !followersASet.has(id));
+                const unfollowed = [...followingASet].filter(id => !followingBSet.has(id));
+                const newFollowing = [...followingBSet].filter(id => !followingASet.has(id));
+                
+                displayResults('📉 Followers perdus', lostFollowers, followersA, 'lost');
+                displayResults('📈 Nouveaux followers', newFollowers, followersB, 'new');
+                displayResults('🚫 Tu ne suis plus', unfollowed, followingA, 'unfollowed');
+                displayResults('✅ Tu suis maintenant', newFollowing, followingB, 'following');
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function displayResults(title, userIds, userData, cssClass) {
+            const resultsDiv = document.getElementById('results');
+            
+            const section = document.createElement('div');
+            section.className = `result-section ${cssClass}`;
+            
+            const titleElem = document.createElement('div');
+            titleElem.className = 'result-title';
+            titleElem.innerHTML = `
+                <span>${title}</span>
+                <span class="count">${userIds.length}</span>
+            `;
+            section.appendChild(titleElem);
+            
+            if (userIds.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'empty-message';
+                emptyMsg.textContent = 'Aucun résultat';
+                section.appendChild(emptyMsg);
+            } else {
+                const list = document.createElement('ul');
+                list.className = 'user-list';
+                
+                userIds.forEach((userId, index) => {
+                    const item = document.createElement('li');
+                    item.className = 'user-item';
+                    item.style.animationDelay = `${index * 0.05}s`;
+                    item.innerHTML = `
+                        <span class="user-name">${userData[userId]}</span>
+                        <span class="user-id">${userId}</span>
+                    `;
+                    list.appendChild(item);
+                });
+                
+                section.appendChild(list);
+            }
+            
+            resultsDiv.appendChild(section);
+        }
+    </script>
+</body>
+</html>
